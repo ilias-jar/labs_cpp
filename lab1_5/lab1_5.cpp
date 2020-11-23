@@ -312,6 +312,7 @@ void printAnswer(int cities, int ***roads, bool usingFile) //передаем р
 
 
 //разбила main на 3 функции
+
 char menu(bool &ifInput)
 {
 	if (ifInput)
