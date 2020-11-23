@@ -3,6 +3,8 @@
 соединяющий их путь. Найдите такой город, сумма расстояний от которого до остальных
 городов минимальна. */
 
+//предупреждаю, что я конечно все перевела, но у меня машина с английской локалью, поэтому сама я проверить ничего не могу
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -105,7 +107,7 @@ void openFile(std::fstream &file, bool forInput) //открываем ли мы 
 
 
 
-bool findNumberFile(int &number, std::fstream &file)
+bool findNumberFile(std::fstream &file, int &number)
 {
 	while (!file.eof() && !isdigit(file.get()));
 	if (!file.eof())
@@ -116,15 +118,16 @@ bool findNumberFile(int &number, std::fstream &file)
 			number = number * 10 + (file.get() - '0');
 		return true;
 	}
-	else return false;
+	return false;
 }
 
 bool inputDataFile(int &cities, int ***roads) //возвращает true, если все нужные данные были считаны
 {
 	std::fstream file;
 	openFile(file, true);
-	if (findNumberFile(cities, file) && cities > 1)  //если городов < 2, то и дорог нет
+	if (findNumberFile(file, cities) && cities > 1)  //если городов < 2, то и дорог нет
 	{
+		//почистила
 		//считаем количество дорог по формуле 1 + 2 + ... + (cities - 1)
 		int roadsAmount = 0;
 		*roads = new int *[cities - 1];
@@ -136,14 +139,14 @@ bool inputDataFile(int &cities, int ***roads) //возвращает true, ес�
 		for (int i = 1; i <= roadsAmount; i++)
 		{
 			int city1, city2, roadLength;                             //индексы не могут быть больше количества городов, а длина дороги не может быть = 0
-			if ((findNumberFile(city1, file) && city1 <= cities) && (findNumberFile(city2, file) && city2 <= cities) && (findNumberFile(roadLength, file) && roadLength))
+			if ((findNumberFile(file, city1) && city1 <= cities) && (findNumberFile(file, city2) && city2 <= cities) && (findNumberFile(file, roadLength) && roadLength))
 				if (city2 > city1)
 					(*roads)[city1 - 1][cities - city2] = roadLength;
 				else
 					(*roads)[city2 - 1][cities - city1] = roadLength;
 			else
 			{
-				std::cout << std::endl << "Файл содержит некорректную информацию. Работа не может быть завершена." << std::endl;
+				std::cout << std::endl << "Файл содержит некорректную информацию. Обработка данных не может быть завершена." << std::endl;
 				file.close();
 				return false;
 			}
@@ -175,7 +178,7 @@ void inputNumberKeyboard(int &number)
 	number = std::stoi(check);
 }
 
-void inputRowKeyboard(int cities, int ***roads, int i)
+void inputRowKeyboard(int cities, int ***roads, int i) //новая функция
 {
 	for (int j = i + 1; j <= cities; j++)
 	{
@@ -219,7 +222,7 @@ int numberLength(int number)
 	return length;
 }
 
-void valuesPerCity(int &roadLengthSum, int &longestRoad, int **roads, int cities, int i)
+void valuesPerCity(int &roadLengthSum, int &longestRoad, int cities, int **roads, int i)
 {
 	roadLengthSum = 0;
 	longestRoad = 0;
@@ -276,7 +279,7 @@ void printAnswer(int cities, int ***roads, bool usingFile) //передаем р
 	{
 		int *roadLengthSumPerCity = new int[cities], *longestRoads = new int[cities]; //longestRoads - массив самых длинных чисел среди всех длин дорог для каждого города
 		for (int i = 0; i < cities; i++)
-			valuesPerCity(roadLengthSumPerCity[i], longestRoads[i], *roads, cities, i);
+			valuesPerCity(roadLengthSumPerCity[i], longestRoads[i], cities, *roads, i);
 
 		std::cout << "Таблица всех дорог:" << std::endl;
 		printTable(cities, *roads, longestRoads); //печатаем таблицу всех значений для наглядности
@@ -302,12 +305,13 @@ void printAnswer(int cities, int ***roads, bool usingFile) //передаем р
 	{
 		file.close();
 		std::cout.rdbuf(origbuf);
-		std::cout << std::endl << "Вывод успешно завершен.";
+		std::cout << std::endl << "Печать успешно завершена.";
 	}
 }
 
 
 
+//разбила main на 3 функции
 char menu(bool &ifInput)
 {
 	if (ifInput)
@@ -323,7 +327,7 @@ char menu(bool &ifInput)
 	}
 }
 
-bool menuFunc(char ioChoice, int &cities, int ***roads)
+bool menuFunc(int &cities, int ***roads, char ioChoice)
 {
 	switch (ioChoice)
 	{
@@ -354,7 +358,7 @@ int main()
 	setlocale(LC_ALL, "Russian");
 	int cities = -1, **roads = nullptr; //cities - кол-во городов, roads - матрица дорог
 	bool ifInput = true;
-	while (menuFunc(menu(ifInput), cities, &roads));
+	while (menuFunc(cities, &roads, menu(ifInput)));
 	if (roads)
 	{
 		for (int i = 0; i < cities - 1; i++)
