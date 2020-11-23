@@ -3,6 +3,8 @@
 соединяющий их путь. Найдите такой город, сумма расстояний от которого до остальных
 городов минимальна. */
 
+//предупреждаю, что я конечно все перевела, но у меня машина с английской локалью, поэтому сама я проверить ничего не могу
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -116,7 +118,7 @@ bool findNumberFile(int &number, std::fstream &file)
 			number = number * 10 + (file.get() - '0');
 		return true;
 	}
-	else return false;
+	return false;
 }
 
 bool inputDataFile(int &cities, int ***roads) //возвращает true, если все нужные данные были считаны
@@ -125,6 +127,7 @@ bool inputDataFile(int &cities, int ***roads) //возвращает true, ес�
 	openFile(file, true);
 	if (findNumberFile(cities, file) && cities > 1)  //если городов < 2, то и дорог нет
 	{
+		//почистила
 		//считаем количество дорог по формуле 1 + 2 + ... + (cities - 1)
 		int roadsAmount = 0;
 		*roads = new int *[cities - 1];
@@ -143,7 +146,7 @@ bool inputDataFile(int &cities, int ***roads) //возвращает true, ес�
 					(*roads)[city2 - 1][cities - city1] = roadLength;
 			else
 			{
-				std::cout << std::endl << "Файл содержит некорректную информацию. Работа не может быть завершена." << std::endl;
+				std::cout << std::endl << "Файл содержит некорректную информацию. Обработка данных не может быть завершена." << std::endl;
 				file.close();
 				return false;
 			}
@@ -175,7 +178,7 @@ void inputNumberKeyboard(int &number)
 	number = std::stoi(check);
 }
 
-void inputRowKeyboard(int cities, int ***roads, int i)
+void inputRowKeyboard(int cities, int ***roads, int i) //новая функция
 {
 	for (int j = i + 1; j <= cities; j++)
 	{
@@ -302,12 +305,13 @@ void printAnswer(int cities, int ***roads, bool usingFile) //передаем р
 	{
 		file.close();
 		std::cout.rdbuf(origbuf);
-		std::cout << std::endl << "Вывод успешно завершен.";
+		std::cout << std::endl << "Печать успешно завершена.";
 	}
 }
 
 
 
+//разбила main на 3 функции
 char menu(bool &ifInput)
 {
 	if (ifInput)
