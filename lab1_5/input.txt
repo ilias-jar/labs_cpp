@@ -1,0 +1,4 @@
+Cities: 3
+Road length between city 1 and city 2: 46
+Road length between city 2 and city 3: 120
+Road length between city 3 and city 1: 9
